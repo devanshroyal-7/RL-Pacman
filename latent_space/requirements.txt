@@ -1,0 +1,15 @@
+# PyTorch with CUDA 12.1 support
+# Install using: pip install --index-url https://download.pytorch.org/whl/cu121 -r requirements.txt
+# OR install PyTorch separately first: pip install torch==2.4.1 torchvision==0.19.1 torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu121
+# Then: pip install -r requirements.txt
+
+torch==2.4.1
+torchvision==0.19.1
+torchaudio==2.4.1
+numpy==1.26.4
+gymnasium[atari]==0.29.1
+ale-py==0.10.1
+tqdm
+opencv-python==4.10.0.84
+matplotlib==3.9.2
+tensorboard==2.17.1
