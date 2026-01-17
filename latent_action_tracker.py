@@ -9,15 +9,21 @@ class LatentStateTracker:
     def _hash_latent_state(self, latent_vector: torch.Tensor) -> Tuple[float, ...]:
         if isinstance(latent_vector, torch.Tensor):
             latent_array = latent_vector.cpu().numpy().flatten()
+            # print("Latent array: ", latent_array)
+            # print("Latent vector: ", latent_vector)
         else:
             latent_array = np.array(latent_vector).flatten()
-        return tuple(np.round(latent_array, decimals=2))
+        return tuple(latent_array)
     
-    def has_visited(self, latent_vector: torch.Tensor, action: int) -> bool:
+    def has_visited(self, latent_vector: torch.Tensor) -> bool:
+        """
+        Doesn't check for the exact state, but also within some delta
+        """
         latent_key = self._hash_latent_state(latent_vector)
-        if latent_key not in self.visited_states:
-            return False
-        return action in self.visited_states[latent_key]
+        
+        neighboring_states = self.get_neighboring_states(latent_key)
+        
+        return len(neighboring_states) > 0
     
     def record_action(self, latent_vector: torch.Tensor, action: int):
         latent_key = self._hash_latent_state(latent_vector)
@@ -27,11 +33,26 @@ class LatentStateTracker:
     
     def get_visited_actions(self, latent_vector: torch.Tensor) -> Set[int]:
         latent_key = self._hash_latent_state(latent_vector)
-        return self.visited_states.get(latent_key, set())
-    
+        neighboring_states = self.get_neighboring_states(latent_key)
+        visited_actions = set()
+        for state in neighboring_states:
+            visited_actions.update(self.visited_states[state])
+        return visited_actions
+
     def get_latent_key(self, latent_vector: torch.Tensor) -> Tuple[float, ...]:
         return self._hash_latent_state(latent_vector)
-    
+
+    def get_neighboring_states(self, latent_key: np.ndarray) -> float:
+        neighboring_states = []
+        latent_array = np.array(latent_key)
+        for key in self.visited_states.keys():
+            key_array = np.array(key)
+            distance = np.linalg.norm(key_array - latent_array)
+            if distance < 0.35:
+                neighboring_states.append(key)
+
+        return neighboring_states 
+
     def reset(self):
         self.visited_states.clear()
 
