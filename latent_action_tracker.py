@@ -42,7 +42,7 @@ class LatentStateTracker:
     def get_latent_key(self, latent_vector: torch.Tensor) -> Tuple[float, ...]:
         return self._hash_latent_state(latent_vector)
 
-    def get_neighboring_states(self, latent_key: np.ndarray) -> float:
+    def get_neighboring_states(self, latent_key: np.ndarray) -> list[Tuple[float, ...]]:
         neighboring_states = []
         latent_array = np.array(latent_key)
         for key in self.visited_states.keys():

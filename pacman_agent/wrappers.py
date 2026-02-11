@@ -1,4 +1,5 @@
 import collections
+from typing import Optional
 import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
@@ -119,11 +120,13 @@ class FrameStack(gym.Wrapper):
 		return np.concatenate(list(self.frames), axis=-1)
 
 
-def make_atari_pacman_env(render_mode: str | None = None, frame_stack: int = 4, clip_rewards: bool = True) -> gym.Env:
+def make_atari_pacman_env(render_mode: Optional[str] = None, frame_stack: int = 4, episodic_life: bool = True) -> gym.Env:
 	"""Create `ALE/MsPacman-v5` with common Atari preprocessing wrappers."""
 	env = gym.make("ALE/MsPacman-v5", render_mode=render_mode)
 	env = NoopResetEnv(env)
 	env = MaxAndSkipEnv(env, skip=4)
+	if episodic_life:
+		env = EpisodicLifeEnv(env)
 	env = WarpFrame(env)
 	env = FrameStack(env, k=frame_stack)
 	return env
